@@ -1,0 +1,185 @@
+---
+title: "Plotly Example"
+author: "Scott Campit"
+output: html_notebook
+---
+
+## Preliminaries: Installing Essential Packages
+First, we need to install some R libraries.
+```{r}
+#install.packages(c('plotly', 'ggplot2', 'devtools', 'ggally', 'datasets', 'reshape2'))
+```
+
+## Exploratory data analysis
+Now that we have installed some libraries, let's make some plots of the Iris dataset. This dataset is used for so many machine learning tutorials because of its simplicity. The dataset contains 150 data points, corresponding to three species of Irises (Setosa, Versicolor, and Virginica). There are 4 attributes (or **features**) associated with the Iris that have been traditionally used to classify these three species: Sepal Length, Sepal Width, Petal Length, and Petal Width.  
+```{r}
+# Load libs
+library(datasets)
+
+# Iris data summary
+data(iris)
+summary(iris)
+```
+
+**What do you notice about the data, based on the data summary?**
+
+## Plotly Example 1: Histogram of a single feature
+Next, we'll perform some exploratory data analysis using Plotly, which enables interactive data analysis. A simple example is shown below for a single feature: `Sepal Length`.
+
+```{r}
+library(plotly)
+# Histogram of the sepal length
+sepalLengthHist = plot_ly(
+  alpha=0.7,
+  type='histogram', 
+  x=iris$Sepal.Length
+)
+
+# Histogram layout attributes
+txt = list(
+  family="Courier New, monospace",
+  size=18,
+  color="#7F7F7F"
+)
+yax = list(
+  title="Counts per bin",
+  titlefont=txt
+)
+xax = list(
+  title="Sepal Length Distribution",
+  titlefont=txt
+)
+sepalLengthHist = sepalLengthHist %>% layout(xaxis=xax, 
+                                             yaxis=yax,
+                                             title="Sepal length distribution in the Iris dataset")
+sepalLengthHist
+```
+
+## Plotly Example 2: Histogram of multiple features
+This illustrates how to make a simple histogram. However, while a useful exercise, we usually want to look at multiple features simultaneously. Since there are 4 features, let's overlay the 4 distributions in a single plot. 
+
+```{r}
+library(reshape2)
+features_melted = melt(iris, id='Species')
+
+plot_ly(data=features_melted, alpha=0.60) %>% 
+  add_histogram(x=~value, name=~variable) %>%
+  layout(barmode="overlay",
+         title="Histogram of the Iris dataset distribution",
+         xaxis=list(
+           title="Value distribution"
+         ),
+         yaxis=list("Counts per bin"))
+```
+**What do you notice about `Sepal.Length` with respect to the other features?**
+
+## Plotly Example 3: Boxplots
+Let's now look at the data distribution from the perspective of the **targets**. We can do that by creating boxplots of the Iris data.
+
+```{r}
+fig = plot_ly(y=~features_melted$value, 
+              color=~features_melted$Species, 
+              type="box",
+              boxpoints="all", 
+              jitter=0.3)
+fig
+```
+
+**What are these boxplots telling us?**
+
+## Plotly Example 4: Scatterplot matrices (Sploms)
+Sometimes, we want to see how datapoints are correlated with each other. We can make a single scatterplot. However, it would be pretty tedious to analyze 5-30 individual scatterplots. One solution is to plot a matrix of scatterplots. These are known as Scatterplot matrices or Sploms.
+
+The code below shows a Splom for the Iris dataset.
+
+```{r}
+# Create a color map 
+pl_colorscale=list(c(0.000, '#19d3f3'),
+                   c(0.333, '#19d3f3'),
+                   c(0.333, '#e763fa'),
+                   c(0.666, '#e763fa'),
+                   c(0.666, '#636efa'),
+                   c(1.000, '#636efa'))
+
+# Set axes params
+axis = list(showline=FALSE,
+            zeroline=FALSE,
+            gridcolor='#ffff',
+            ticklen=4)
+
+# Create a figure of the Iris dataset
+fig = iris %>% plot_ly() 
+fig = fig %>%
+  add_trace(
+    type = 'splom',
+    dimensions = list(
+      list(label='Sepal Length', values=~Sepal.Length),
+      list(label='Sepal Width', values=~Sepal.Width),
+      list(label='Petal Length', values=~Petal.Length),
+      list(label='Petal Width', values=~Petal.Width)
+    ),
+    text=~Species,
+    marker = list(
+      color = as.integer(iris$Species),
+      colorscale = pl_colorscale,
+      size = 7,
+      line = list(
+        width = 1,
+        color = 'rgb(230,230,230)'
+      )
+    )
+  ) 
+
+# Layout for the Splom
+fig = fig %>%
+  layout(
+    title= 'Iris dataset correlations and data distribution',
+    hovermode='closest',
+    dragmode= 'select',
+    plot_bgcolor='rgba(240,240,240, 0.95)',
+    xaxis=list(domain=NULL, showline=F, zeroline=F, gridcolor='#ffff', ticklen=4),
+    yaxis=list(domain=NULL, showline=F, zeroline=F, gridcolor='#ffff', ticklen=4),
+    xaxis2=axis, xaxis3=axis, xaxis4=axis,
+    yaxis2=axis, yaxis3=axis, yaxis4=axis
+  )
+
+# Hide diagonal (useless) and hide upper half (redundant)
+fig %>% style(diagonal=list(visible=F), showupperhalf=F)
+```
+
+**What can we say about different predictors and their distributions relative to each other?**
+
+
+## Example 5: Pairwise coordinate plots
+Visualizing multidimensional data, especially with time-course data, can be very tricky! One way to analyze high dimensional data is to flatten it using a pairwise coordinate plot, show below:
+
+```{r}
+iris %>% plot_ly(type='parcoords',
+                 line = list(color=~as.integer(Species),
+                             colorscale=list(c(0.0, 'red'), 
+                                             c(0.5, 'green'),
+                                             c(1.0, 'blue')
+                                             )
+                             ),
+                 dimensions = list(
+                                   list(range=c(2.0, 4.5),
+                                        label='Sepal Width', 
+                                        values=~Sepal.Width),
+                                   list(range=c(4.0, 8.0),
+                                        constraintrange=c(5.0, 6.0),
+                                        label='Sepal Length', 
+                                        values=~Sepal.Length),
+                                   list(range=c(0.0, 2.5),
+                                        label='Petal Width',
+                                        values=~Petal.Width),
+                                   list(range=c(1.0, 7.0),
+                                        label='Petal Length',
+                                        values=~Petal.Length)
+                                   )
+                  )
+```
+
+**Is this visualization appropriate for this dataset?**
+
+## Summary 
+This is a brief overview of using Plotly to create interactive datasets in R. You can also using the Python API to create interactive plots in Python. In either case, interactive plots are useful for exploratory data analysis.
