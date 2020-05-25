@@ -1,0 +1,60 @@
+---
+title: "Fundamentals 3: EDA & Data Visualization"
+output: html_notebook
+---
+
+**Objective**: Learn about and apply different plotting methods using the `iris` dataset. 
+
+# Install and load necessary packages
+
+```{r Intall packages}
+# ggplot2
+  install.packages('ggplot2')
+  library(ggplot2)
+
+# ggally
+  install.packages('ggally')
+  library(ggally)
+  
+# datasets (iris)
+  install.packages('datasets')
+  library(datasets)
+```
+
+# Load the `iris` dataset using the `data` function
+
+```{r Load iris dataset}
+
+```
+
+# Pair plot
+
+**Objective**: Generate pair plots for all variables in the `iris` dataset.
+
+```{r Visualize pair plots}
+
+```
+
+# Violin plot
+
+**Objective**: Generate violin plots to compare `Petal.Length` between different species. 
+
+```{r Visualize violin plots}
+
+```
+
+# Parallel coordinate plot
+
+**Objective**: Generate parallel coordinate plots to identify any trends across variables for each species. 
+
+```{r Visualize parallel coordinate plots}
+
+```
+
+# Heatmap
+
+**Objective**: Generate a heatmap for `Petal.Length` to determine whether this feature can differentiate species. 
+
+```{r Visualize heatmap}
+
+```
