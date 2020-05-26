@@ -1,6 +1,5 @@
 """
 This is an application that visualizes microRNA data from the Cancer Cell Line Encyclopedia.
-The data can be accessed here: https://data.broadinstitute.org/ccle/CCLE_miRNA_20181103.gct
 
 @author: Scott Campit
 """
@@ -94,5 +93,3 @@ app.layout = [html.Div(
 
 if __name__ == "__main__":
     app.run_server(debug=True)
-
-
