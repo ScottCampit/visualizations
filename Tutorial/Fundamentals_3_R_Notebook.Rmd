@@ -7,7 +7,7 @@ output: html_notebook
 
 # Install and load necessary packages
 
-```{r Intall packages}
+```{r Intall packages, include = F}
 # ggplot2
   install.packages('ggplot2')
   library(ggplot2)
@@ -17,7 +17,6 @@ output: html_notebook
   library(ggally)
   
 # datasets (iris)
-  install.packages('datasets')
   library(datasets)
 ```
 
